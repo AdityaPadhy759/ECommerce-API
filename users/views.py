@@ -5,6 +5,8 @@ from rest_framework.views import APIView
 from rest_framework import status
 from .serializers import RegisterSerializer
 from .serializers import LoginSerializer
+from rest_framework.permissions import IsAuthenticated
+from .serializers import ProfileSerializer
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -18,3 +20,11 @@ class LoginView(APIView):
         
         return Response(Serializer.errors, status = status.HTTP_400_BAD_REQUEST)
     
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def  get(self, request):
+        serializer = ProfileSerializer(request.user)
+        return Response(serializer.data)
+
+        
