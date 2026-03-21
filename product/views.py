@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Product, Category
+from .models import Product, Category, ProductImage
 from rest_framework import generics
-from .serializers import ProductListSerializer, ProductCategorySerializer
+from .serializers import ProductListSerializer, ProductCategorySerializer, ProductImageSerializer
 
 # Create your views here.
 # ProductList API
@@ -23,3 +23,11 @@ class ProductDetailsAPI(generics.RetrieveAPIView):
 class ProductCategoryAPI(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = ProductCategorySerializer
+    
+#ProductImage API
+class ProductImageAPI(generics.ListAPIView):
+    specializer_class = ProductImageSerializer
+    
+    def get_queryset(self):
+        product_id = self.kwargs['id']
+        return ProductImage.objects.filter(product_id = product_id)
