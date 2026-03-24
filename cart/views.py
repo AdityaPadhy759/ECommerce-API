@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Cart, CartItem
 from product.models import Product
+from .serializers import CartSerializer
 
 # Create your views here.
 # Add to Cart
@@ -34,3 +35,11 @@ class AddToCart(APIView):
             
         cart_item.save()
         return Response({",essage":"Product added to cart"}, status=200)
+    
+#ViewCart
+class ViewCart(APIView):
+    def get(self, request):
+        cart = get_user_cart(request.user)
+        serializer = CartSerializer(cart)
+        return Response(serializer.data)
+    
