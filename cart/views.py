@@ -42,4 +42,37 @@ class ViewCart(APIView):
         cart = get_user_cart(request.user)
         serializer = CartSerializer(cart)
         return Response(serializer.data)
-    
+
+#Delete / Remove
+class RemoveFromCart(APIView):
+    def delete(self, request, pk):
+        cart = get_user_cart(request.user)
+        
+        try:
+            item = CartItem.objects.get(id = pk, cart = cart)
+        except CartItem.DoesNotExist:
+            return Response({"error" : "Item not found"}, status=404)
+        item.delete()
+        return Response({"message":"Item removed successfully"}, status=200)
+
+#Update Cart
+class UpdateCart(APIView):
+    def patch(self, request, pk):
+        cart = get_user_cart(request.user)
+        
+        try:
+            item = CartItem.objects.get(id = pk, cart = cart)
+        except CartItem.DoesNotExist:
+            return Response({"error":"Item not found"}, status=404)
+        
+        quantity = int(request.data.get('quantity', 1))
+        
+        if quantity <= 0:
+            item.delete()
+            return Response({"message":"Item removed because quantity is 0"})
+        
+        item.quantity = quantity
+        item.save()
+        
+        return Response({"message":"Cart updated successfully"})
+        
